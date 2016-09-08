@@ -38,13 +38,11 @@ def _get_weather(lati, longi):
     which is a description of the current temperature and summary of
     daily forecast
     '''
-    weather_address = "https://api.forecast.io/forecast/{}/{},{}".format(WEATHER_API_KEY,lati,longi)
+    weather_address = "https://api.forecast.io/forecast/{}/{},{}?units=si".format(WEATHER_API_KEY,lati,longi)
     weather = requests.get(weather_address)
     local_weather = weather.json()
     # gets current temperature
-    currently = local_weather["currently"]
-    temperature = currently["temperature"]
-
+    temperature = local_weather["currently"]["temperature"]
     # gets the daily data for the whole week
     daily = local_weather["daily"]["data"]
 
@@ -54,7 +52,7 @@ def _get_weather(lati, longi):
     # gets todays summary
     today_summary = today["summary"]
 
-    return "Temperature: {} Fahrenheit. Forecast: {}".format(temperature, today_summary)
+    return "Temperature: {} Celsius. Forecast: {}".format(temperature, today_summary)
 
 
 def _get_lati_longi(address):
