@@ -1,16 +1,21 @@
-import os
-import time
+import argparse
 import geocoder
+import os
 import requests
-
+import time
 
 from flask import Flask, render_template
 
-INSTA_ACCESS_TOKEN = # ADD TOKEN as a string
-WEATHER_API_KEY = # ADD API KEY as a string
-GOOGLE_MAPS_STATIC_API_KEY = # ADD API KEY as a string
-GOOGLE_MAPS_STREETVIEW_API_KEY = # ADD API KEY as a string
+secrets = argparse.Namespace()
+with open("SECRETS.txt") as f:
+    for line in f:
+        vals = line.strip().split('=', 1)
+        setattr(secrets, vals[0].lower(), vals[1])
 
+insta_auth = secrets.insta_access_token
+weather_auth = secrets.weather_api_key
+gmapstatic_auth = google_maps_static_api_key
+gmapstreet_auth = google_maps_streetview_api_key
 
 # 'static_folder' is used for serving static files
 proj_dir = os.path.abspath(os.path.dirname(__file__))
@@ -25,7 +30,7 @@ def get_photos(lati, longi):
     This method queries Instagram 'media/search' API endpoint for
     a given lati/longi and returns the reply as a json()
     '''
-    insta_address = "https://api.instagram.com/v1/media/search?lat={}&lng={}&access_token={}".format(lati, longi, INSTA_ACCESS_TOKEN)
+    insta_address = "https://api.instagram.com/v1/media/search?lat={}&lng={}&access_token={}".format(lati, longi, insta_auth)
     photos = requests.get(insta_address)
     return photos.json()
 
@@ -38,7 +43,7 @@ def _get_weather(lati, longi):
     which is a description of the current temperature and summary of
     daily forecast
     '''
-    weather_address = "https://api.forecast.io/forecast/{}/{},{}?units=si".format(WEATHER_API_KEY,lati,longi)
+    weather_address = "https://api.forecast.io/forecast/{}/{},{}?units=si".format(weather_auth,lati,longi)
     weather = requests.get(weather_address)
     local_weather = weather.json()
     # gets current temperature
@@ -95,7 +100,7 @@ def get_static_map(lati, longi):
     /static/<image_name>?<random_number>
     The latter is to avoid browser caching.
     '''
-    map_address = "https://maps.googleapis.com/maps/api/staticmap?center={},{}&zoom=13&size=600x300&maptype=hybrid&key={}".format(lati,longi,GOOGLE_MAPS_STATIC_API_KEY)
+    map_address = "https://maps.googleapis.com/maps/api/staticmap?center={},{}&zoom=13&size=600x300&maptype=hybrid&key={}".format(lati,longi,gmapstatic_auth)
     static_map = requests.get(map_address)
     _save_static_file('map.jpg', static_map.content)  # static_map is the result of requests.get() from the google static maps API
     return '/static/map.jpg?{}'.format(time.time())
@@ -110,7 +115,7 @@ def get_streetview(lati, longi):
     /static/<image_name>?<random_number>
     The latter is to avoid browser caching.
     '''
-    streetview_address = "https://maps.googleapis.com/maps/api/streetview?size=400x400&location={},{}&fov=90&heading=235&pitch=10&key={}".format(lati,longi, GOOGLE_MAPS_STREETVIEW_API_KEY)
+    streetview_address = "https://maps.googleapis.com/maps/api/streetview?size=400x400&location={},{}&fov=90&heading=235&pitch=10&key={}".format(lati,longi, gmapstreet_auth)
 
     streetview = requests.get(streetview_address)
     _save_static_file('street.jpg', streetview.content)  # r is the result of requests.get() from the google streetview API
