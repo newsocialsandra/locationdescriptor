@@ -1,8 +1,8 @@
-import argparse
-import geocoder
 import os
-import requests
 import time
+import geocoder
+import requests
+import argparse
 
 from flask import Flask, render_template
 
@@ -14,8 +14,8 @@ with open("SECRETS.txt") as f:
 
 insta_auth = secrets.insta_access_token
 weather_auth = secrets.weather_api_key
-gmapstatic_auth = google_maps_static_api_key
-gmapstreet_auth = google_maps_streetview_api_key
+gmapstatic_auth = secrets.google_maps_static_api_key
+gmapstreet_auth = secrets.google_maps_streetview_api_key
 
 # 'static_folder' is used for serving static files
 proj_dir = os.path.abspath(os.path.dirname(__file__))
