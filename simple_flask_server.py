@@ -43,7 +43,7 @@ def _get_weather(lati, longi):
     which is a description of the current temperature and summary of
     daily forecast
     '''
-    weather_address = "https://api.forecast.io/forecast/{}/{},{}?units=si".format(weather_auth,lati,longi)
+    weather_address = "https://api.darksky.net/forecast/{}/{},{}?units=si".format(weather_auth,lati,longi)
     weather = requests.get(weather_address)
     local_weather = weather.json()
     # gets current temperature
@@ -134,7 +134,7 @@ def describe_address(address):
     # This is just text describing the weather
     weather = _get_weather(lati, longi)
 
-    # This is a list jsons which has a )
+    # This is a json list of photos
     photos_urls = get_photos(lati, longi)
 
     # These are filenames for a jpg file containing the image
